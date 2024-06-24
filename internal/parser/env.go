@@ -9,10 +9,10 @@ import (
 
 type env struct {
 	model.DBCredentials
-	sqlFile string
+	SQLFile string
 }
 
-func getEnv() (env, error) {
+func GetEnv() (env, error) {
 	dbHost := os.Getenv("DB_HOST")
 	if dbHost == "" {
 		return env{}, ErrNoDBHost
@@ -56,6 +56,6 @@ func getEnv() (env, error) {
 			Pass: dbPassword,
 			Name: dbName,
 		},
-		sqlFile: sqlFile,
+		SQLFile: sqlFile,
 	}, nil
 }

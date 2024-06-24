@@ -12,7 +12,7 @@ import (
 )
 
 func TestRunSQL(t *testing.T) { //nolint:paralleltest // This test is not parallel
-	env, err := getEnv()
+	env, err := GetEnv()
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -24,12 +24,12 @@ func TestRunSQL(t *testing.T) { //nolint:paralleltest // This test is not parall
 	}, 1)
 
 	require.NoError(t, err)
-	pairs, err := run(ctx, env.sqlFile, pool.DBConnection)
+	pairs, err := Run(ctx, env.SQLFile, pool.DBConnection)
 	require.NoError(t, err)
 
 	for _, pair := range pairs {
-		pair, err := prepairPair(pair)
+		pair, err := PrepairPair(pair)
 		require.NoError(t, err)
-		require.Equal(t, pair.expected, pair.actual)
+		require.Equal(t, pair.Expected, pair.Actual)
 	}
 }

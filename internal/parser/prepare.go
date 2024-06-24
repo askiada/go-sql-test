@@ -1,16 +1,16 @@
 package parser
 
-func prepairPair(p pair) (pair, error) {
-	sortRows(p.actual)
-	sortRows(p.expected)
+func PrepairPair(p pair) (pair, error) {
+	sortRows(p.Actual)
+	sortRows(p.Expected)
 
-	actual, expected, err := replaceKeywords(p.actual, p.expected)
+	actual, expected, err := replaceKeywords(p.Actual, p.Expected)
 	if err != nil {
 		return pair{}, err
 	}
 
 	return pair{
-		actual:   actual,
-		expected: expected,
+		Actual:   actual,
+		Expected: expected,
 	}, nil
 }

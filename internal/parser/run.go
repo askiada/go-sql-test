@@ -10,11 +10,11 @@ import (
 )
 
 type pair struct {
-	expected [][]string
-	actual   [][]string
+	Expected [][]string
+	Actual   [][]string
 }
 
-func run(ctx context.Context, sqlFile string, db model.DB) ([]pair, error) {
+func Run(ctx context.Context, sqlFile string, db model.DB) ([]pair, error) {
 	lines, err := parseFile(sqlFile)
 	if err != nil {
 		return nil, ErrParseFile
@@ -41,13 +41,13 @@ func run(ctx context.Context, sqlFile string, db model.DB) ([]pair, error) {
 				return nil, fmt.Errorf("unable to get instructions: %w", err)
 			}
 
-			if currPair.expected == nil {
-				currPair.expected = instr.values
+			if currPair.Expected == nil {
+				currPair.Expected = instr.values
 			} else {
 				return nil, ErrUnexpectedInstruction
 			}
 
-			if currPair.actual != nil {
+			if currPair.Actual != nil {
 				pairs = append(pairs, currPair)
 				currPair = pair{}
 			}
@@ -68,13 +68,13 @@ func run(ctx context.Context, sqlFile string, db model.DB) ([]pair, error) {
 				return nil, fmt.Errorf("unable to process rows: %w", err)
 			}
 
-			if currPair.actual == nil {
-				currPair.actual = res
+			if currPair.Actual == nil {
+				currPair.Actual = res
 			} else {
 				return nil, ErrUnexpectedStatement
 			}
 
-			if currPair.expected != nil {
+			if currPair.Expected != nil {
 				pairs = append(pairs, currPair)
 				currPair = pair{}
 			}

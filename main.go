@@ -1,30 +1,46 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"os/exec"
-	"syscall"
+	"context"
+	"testing"
+	"time"
+
+	"github.com/arsham/retry"
+	"github.com/stretchr/testify/require"
+
+	"github.com/askiada/go-sql-test/internal/db"
+	"github.com/askiada/go-sql-test/internal/parser"
 )
 
-func main() {
-	// Prepare the go test command
-	// You can specify a particular package or file by adding arguments to the command
-	cmd := exec.Command("go", "test", "github.com/askiada/go-sql-test/internal/parser", "-run", "TestRunSQL")
+func TestRunSQL(t *testing.T) { //nolint:paralleltest // This test is not parallel
+	env, err := parser.GetEnv()
+	require.NoError(t, err)
 
-	// Run the command and capture the output and error
-	output, err := cmd.CombinedOutput()
-	fmt.Println(string(output)) //nolint:forbidigo // Print the output before exiting
+	ctx := context.Background()
 
-	if err != nil {
-		// Check if the error is an ExitError
-		if exitErr, ok := err.(*exec.ExitError); ok { //nolint:errorlint // error is never wrapped
-			// Check if the underlying system call error is available and extract the exit code
-			if status, ok := exitErr.Sys().(syscall.WaitStatus); ok {
-				os.Exit(status.ExitStatus())
-			}
-		}
+	pool, err := db.NewClient(ctx, &env.DBCredentials, retry.Retry{
+		Method:   retry.IncrementalDelay,
+		Attempts: 3,
+		Delay:    100 * time.Millisecond,
+	}, 1)
 
-		os.Exit(1) // Default exit code for general errors
+	require.NoError(t, err)
+	pairs, err := parser.Run(ctx, env.SQLFile, pool.DBConnection)
+	require.NoError(t, err)
+
+	for _, pair := range pairs {
+		pair, err := parser.PrepairPair(pair)
+		require.NoError(t, err)
+		require.Equal(t, pair.Expected, pair.Actual)
 	}
+}
+
+func main() {
+	testing.Main(
+		nil,
+		[]testing.InternalTest{
+			{"TestRunSQL", TestRunSQL},
+		},
+		nil, nil,
+	)
 }

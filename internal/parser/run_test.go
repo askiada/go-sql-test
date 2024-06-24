@@ -21,13 +21,13 @@ func TestRun1(t *testing.T) {
 
 	mock.ExpectQuery(".*").WillReturnRows(mock.NewRows([]string{"count"}).AddRow(int64(3)))
 
-	pairs, err := run(ctx, "testdata/1.sql", mock)
+	pairs, err := Run(ctx, "testdata/1.sql", mock)
 	require.NoError(t, err)
 
 	for _, pair := range pairs {
-		pair, err := prepairPair(pair)
+		pair, err := PrepairPair(pair)
 		require.NoError(t, err)
-		require.Equal(t, pair.expected, pair.actual)
+		require.Equal(t, pair.Expected, pair.Actual)
 	}
 }
 
@@ -55,13 +55,13 @@ func TestRun2(t *testing.T) {
 	mrows2.AddRow("coucou2", false, 45, 18, "{'m': 'n'}")
 
 	mock.ExpectQuery(".*").WillReturnRows(mrows2)
-	pairs, err := run(ctx, "testdata/2.sql", mock)
+	pairs, err := Run(ctx, "testdata/2.sql", mock)
 	require.NoError(t, err)
 
 	for _, pair := range pairs {
-		pair, err := prepairPair(pair)
+		pair, err := PrepairPair(pair)
 		require.NoError(t, err)
-		require.Equal(t, pair.expected, pair.actual)
+		require.Equal(t, pair.Expected, pair.Actual)
 	}
 }
 
@@ -89,12 +89,12 @@ func TestRun3(t *testing.T) {
 	mrows2.AddRow("coucou2", false, 45, 18, "{'m': 'n'}")
 
 	mock.ExpectQuery(".*").WillReturnRows(mrows2)
-	pairs, err := run(ctx, "testdata/3.sql", mock)
+	pairs, err := Run(ctx, "testdata/3.sql", mock)
 	require.NoError(t, err)
 
 	for _, pair := range pairs {
-		pair, err := prepairPair(pair)
+		pair, err := PrepairPair(pair)
 		require.NoError(t, err)
-		require.Equal(t, pair.expected, pair.actual)
+		require.Equal(t, pair.Expected, pair.Actual)
 	}
 }
