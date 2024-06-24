@@ -125,9 +125,11 @@ func getInstructions(lines []parsedLine) (*outputInstruction, error) {
 		uniquePrefixes[prefixType] = struct{}{}
 
 		switch prefixType {
-		case instructionPrefixStartTest, instructionPrefixEndTest:
+		case instructionPrefixStartTest:
 			currName = content
 
+			continue
+		case instructionPrefixEndTest:
 			continue
 		case instructionPrefixCount:
 			counts, err := extractCount(content)
@@ -168,6 +170,7 @@ func getInstructions(lines []parsedLine) (*outputInstruction, error) {
 
 	if len(rowsInstrs.values) > 0 {
 		rowsInstrs.name = currName
+		fmt.Println("currName", currName)
 		instrs = append(instrs, &rowsInstrs)
 	}
 

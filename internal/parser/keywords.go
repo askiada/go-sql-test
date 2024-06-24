@@ -3,8 +3,8 @@ package parser
 type Keyword string
 
 const (
-	KeywordAny        Keyword = "K_ANY"
-	KeywordAnyNotNull Keyword = "K_ANY_NOT_NULL"
+	KeywordAny        Keyword = "<K_ANY>"
+	KeywordAnyNotNull Keyword = "<K_ANY_NOT_NULL>"
 )
 
 func replaceKeywords(actual, expected [][]string) ([][]string, [][]string, error) {
@@ -30,6 +30,10 @@ func replaceKeywords(actual, expected [][]string) ([][]string, [][]string, error
 				}
 
 				if actual[i][j] == "NULL" {
+					return nil, nil, ErrAnyNotNullButEmpty
+				}
+
+				if actual[i][j] == "<nil>" {
 					return nil, nil, ErrAnyNotNullButEmpty
 				}
 
