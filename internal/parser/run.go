@@ -10,6 +10,7 @@ import (
 )
 
 type pair struct {
+	Name     string
 	Expected [][]string
 	Actual   [][]string
 }
@@ -25,10 +26,6 @@ func Run(ctx context.Context, sqlFile string, db model.DB) ([]pair, error) {
 		return nil, fmt.Errorf("unable to get groups: %w", err)
 	}
 
-	for _, group := range groups {
-		fmt.Println(group)
-	}
-
 	currPair := pair{}
 
 	pairs := []pair{}
@@ -40,6 +37,8 @@ func Run(ctx context.Context, sqlFile string, db model.DB) ([]pair, error) {
 			if err != nil {
 				return nil, fmt.Errorf("unable to get instructions: %w", err)
 			}
+
+			currPair.Name = instr.name
 
 			if currPair.Expected == nil {
 				currPair.Expected = instr.values

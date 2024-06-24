@@ -86,6 +86,7 @@ func checkCombinedInstructions(instrs []*outputInstruction) error {
 var rgxInstructionPrefix = regexp.MustCompile(`^\s*(-{2,}|\/\*|\s*)*\s*([A-Z_]+)(.*)$`)
 
 type outputInstruction struct {
+	name   string
 	_type  instructionPrefix
 	values [][]string
 }
@@ -99,6 +100,8 @@ func getInstructions(lines []parsedLine) (*outputInstruction, error) {
 	}
 
 	uniquePrefixes := make(map[instructionPrefix]struct{})
+
+	var currName string
 
 	for _, pline := range lines {
 		prefixes := rgxInstructionPrefix.FindStringSubmatch(pline.line)
@@ -123,6 +126,8 @@ func getInstructions(lines []parsedLine) (*outputInstruction, error) {
 
 		switch prefixType {
 		case instructionPrefixStartTest, instructionPrefixEndTest:
+			currName = content
+
 			continue
 		case instructionPrefixCount:
 			counts, err := extractCount(content)
@@ -131,6 +136,7 @@ func getInstructions(lines []parsedLine) (*outputInstruction, error) {
 			}
 
 			instrs = append(instrs, &outputInstruction{
+				name:   currName,
 				_type:  prefixType,
 				values: counts,
 			})
@@ -142,6 +148,7 @@ func getInstructions(lines []parsedLine) (*outputInstruction, error) {
 			}
 
 			instrs = append(instrs, &outputInstruction{
+				name:   currName,
 				_type:  prefixType,
 				values: rows,
 			})
@@ -160,6 +167,7 @@ func getInstructions(lines []parsedLine) (*outputInstruction, error) {
 	}
 
 	if len(rowsInstrs.values) > 0 {
+		rowsInstrs.name = currName
 		instrs = append(instrs, &rowsInstrs)
 	}
 

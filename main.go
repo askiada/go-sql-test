@@ -29,9 +29,11 @@ func TestRunSQL(t *testing.T) { //nolint:paralleltest // This test is not parall
 	require.NoError(t, err)
 
 	for _, pair := range pairs {
-		pair, err := parser.PrepairPair(pair)
-		require.NoError(t, err)
-		require.Equal(t, pair.Expected, pair.Actual)
+		t.Run(pair.Name, func(t *testing.T) {
+			pair, err := parser.PrepairPair(pair)
+			require.NoError(t, err)
+			require.Equal(t, pair.Expected, pair.Actual)
+		})
 	}
 }
 
